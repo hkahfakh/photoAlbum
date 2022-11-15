@@ -35,23 +35,23 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.initial_path = None
 
         self.label_qci = defaultdict(list)  # key 标签 value qci
-        self.all_qci = defaultdict(int) # key qci value 标签数
+        self.all_qci = defaultdict(list)  # key qci value 标签列表
 
     def init_slot(self):
         self.helpSignal.connect(self.showHelpMessage)
         self.btn_choose.clicked.connect(self.slot_btn_chooseDir)
         self.btn_confirm.clicked.connect(self.item_show)
-        # self.btn_start.clicked.connect()
 
     # Slot Func
     def item_show(self):
-        t = {i.data() for i in self.labelShow.selectionModel().selectedIndexes()}
-        for k in t:
-            k = k.data()
+        for qci in self.all_qci.keys():
+            qci.show()
 
-            for qci in self.label_qci[k]:
-                # qci.deleteLater()
-                qci.setParent(None)
+        selected_label = {i.data() for i in self.labelShow.selectionModel().selectedIndexes()}  # 选中的临时删掉
+
+        for qci in self.all_qci.keys():
+            if set(self.all_qci[qci]) & (selected_label):
+                qci.hide()
 
     def keyPressEvent(self, event):
         """
@@ -118,7 +118,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
         labels = clickable_image.get_label()
 
-        self.all_qci[clickable_image] += len(labels)
+        self.all_qci[clickable_image] = list(labels)
 
         for l in labels:
             self.label_qci[l].append(clickable_image)
