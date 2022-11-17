@@ -2,16 +2,17 @@ import os
 import sys
 from collections import defaultdict
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QGraphicsPixmapItem
-from PyQt5.QtCore import pyqtSignal, QStringListModel, Qt
+from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
+from PyQt5.QtCore import pyqtSignal, QStringListModel, Qt, QThread
 
 from ui.ma import Ui_MainWindow
 from cs_widgets.qci import QClickableImage
-from utils.toyolo import get_xml
+from utils.xmlthread import xmlThread
 
 
 class MyMainWindow(QMainWindow, Ui_MainWindow):
-    helpSignal = pyqtSignal(str)
+    _startThread = pyqtSignal()
+    _helpSignal = pyqtSignal(str)
     printSignal = pyqtSignal(list)
     # 声明一个多重载版本的信号，包括了一个带int和str类型参数的信号，以及带str参数的信号
     previewSignal = pyqtSignal([int, str], [str])
@@ -35,25 +36,63 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
         self.initial_path = None
 
+        self.stat_btn_start = True
+
         self.label_qci = defaultdict(list)  # key 标签 value qci
         self.all_qci = defaultdict(list)  # key qci value 标签列表
 
         self.all_xml = set(os.listdir('./res/Annotations'))
         self.all_img = os.listdir('./res/JPEGImages')
-        self.img_no_xml = [img for img in self.all_img if img.split('.')[0]+'.xml' not in self.all_xml]
-        pass
+        self.img_no_xml = [img for img in self.all_img if img.split('.')[0] + '.xml' not in self.all_xml]
+
+        self.myT = xmlThread(self.img_no_xml)  # 创建线程对象
+        self.thread = QThread(self)  # 初始化QThread子线程
+        self.myT.moveToThread(self.thread)  # 把自定义线程加入到QThread子线程中
+        self._startThread.connect(self.myT.run)  # 只能通过信号-槽启动线程处理函数
+        self.myT.signal.connect(self.call_backlog)
+
+    def start(self):
+        if self.thread.isRunning():
+            return
+        # 先启动QThread子线程
+        self.myT.flag = True
+        self.thread.start()  # 发送信号，启动线程处理函数
+        self._startThread.emit()  # 不能直接调用，否则会导致线程处理函数和主线程是在同一个线程，同样操作不了主界面
+
+    def stop(self):
+        if not self.thread.isRunning():  # 如果该线程已经结束，则不再重新关闭
+            return
+        self.myT.flag = False
+        self.stop_thread()
+
+    def stop_thread(self):
+        print(">>> stop_thread... ")
+        if not self.thread.isRunning():
+            return
+        self.thread.quit()  # 退出
+        self.thread.wait()  # 回收资源
+        print(">>> stop_thread end... ")
+
+    def call_backlog(self, msg):
+        self.statusbar.showMessage(msg)
+        self.addImage(msg)
 
     def init_slot(self):
-        self.helpSignal.connect(self.showHelpMessage)
+        self._helpSignal.connect(self.showHelpMessage)
         self.btn_choose.clicked.connect(self.slot_btn_chooseDir)
         self.btn_confirm.clicked.connect(self.item_show)
         self.btn_start.clicked.connect(self.get_img_xml)
 
     # Slot Func
     def get_img_xml(self):
-        while self.img_no_xml:
-            name = self.img_no_xml.pop()
-            print(get_xml("./res/JPEGImages/" + name))
+        if self.stat_btn_start:
+            self.btn_start.setText("结束")
+            self.start()
+            self.stat_btn_start = False
+        else:
+            self.btn_start.setText("开始")
+            self.stop()
+            self.stat_btn_start = True
 
     def item_show(self):
         for qci in self.all_qci.keys():
@@ -71,11 +110,11 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         :param event:
         :return:
         """
-        self.helpSignal.emit("help message")
+        self._helpSignal.emit("help message")
         if event.key() == Qt.Key_A:
             self.col = 1
             self.row = 0
-            self.helpSignal.emit("修改col row")
+            self._helpSignal.emit("修改col row")
 
     # 显示帮助消息
     def showHelpMessage(self, message):
@@ -146,6 +185,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         img_dir_path = os.path.join(self.initial_path, './JPEGImages', )
         annotation_path = os.path.join(self.initial_path, './Annotations')
         print('img_dir_path为{}'.format(img_dir_path))
+
         img_type = {'png', 'jpg'}
 
         img_list = list(i for i in os.listdir(img_dir_path) if i.split(".")[1] in img_type)
