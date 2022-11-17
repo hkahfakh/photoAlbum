@@ -1,6 +1,5 @@
 <RCC>
   <qresource prefix="pics">
-    <file>images (1).png</file>
-    <file>images.png</file>
+    <file>album_image_landscape_photo_photos_icon.ico</file>
   </qresource>
 </RCC>

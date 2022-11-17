@@ -60,26 +60,19 @@ class QClickableImage(QWidget):
         im = QAction(u'信息', self)
         ch = QAction(u'隐藏', self)
         sc = QAction(u'删除', self)
-        xs = QAction(u'显示相似频率', self)
         self.popMenu.addAction(im)
         self.popMenu.addAction(ch)
         self.popMenu.addAction(sc)
-        self.popMenu.addAction(xs)
         # 绑定事件
         im.triggered.connect(self.show_info)
         ch.triggered.connect(self.reback)
         sc.triggered.connect(self.delete)
-        xs.triggered.connect(self.rshow)
         self.showContextMenu(QCursor.pos())
 
     def show_info(self):
         self.idlg = InfoDialog(self.pixmap, self.image_path, self.info)
         self.idlg.show()
 
-    def rshow(self):
-        '''
-        do something
-        '''
 
     def delete(self):
         '''

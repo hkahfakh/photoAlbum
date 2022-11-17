@@ -6,6 +6,8 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
 from PyQt5.QtCore import pyqtSignal, QStringListModel, Qt, QThread
 
 from ui.ma import Ui_MainWindow
+from cs_widgets.aboutdialog import AboutDialog
+from cs_widgets.settingdialog import SettingDialog
 from cs_widgets.qci import QClickableImage
 from utils.xmlthread import xmlThread
 
@@ -74,6 +76,11 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         print(">>> stop_thread end... ")
 
     def call_backlog(self, msg):
+        """
+        xmlThread信息回传
+        :param msg:
+        :return:
+        """
         self.statusbar.showMessage(msg)
         self.addImage(msg)
 
@@ -82,8 +89,18 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.btn_choose.clicked.connect(self.slot_btn_chooseDir)
         self.btn_confirm.clicked.connect(self.item_show)
         self.btn_start.clicked.connect(self.get_img_xml)
+        self.actionAbouy.triggered.connect(self.open_about)
+        self.actionSetting.triggered.connect(self.open_setting)
 
     # Slot Func
+    def open_about(self):
+        self.abtdlg = AboutDialog()
+        self.abtdlg.show()
+
+    def open_setting(self):
+        self.stdlg = SettingDialog()
+        self.stdlg.show()
+
     def get_img_xml(self):
         if self.stat_btn_start:
             self.btn_start.setText("结束")
@@ -159,8 +176,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
     def addImage(self, img_id):
         nr_of_widgets = self.gridLayout.count()  # 当前布局内的数量
 
-        print('行数为{}'.format(self.row))
-        print('列数为{}'.format(self.col))
+        print('行数为{},列数为{}'.format(self.row, self.col))
         print('此时布局内含有的元素数为{}'.format(nr_of_widgets))
 
         clickable_image = QClickableImage(self.displayed_image_size, self.displayed_image_size, self.initial_path,

@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Album</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../qrc/pics_ui.qrc">
+    <normaloff>:/pics/album_image_landscape_photo_photos_icon.ico</normaloff>:/pics/album_image_landscape_photo_photos_icon.ico</iconset>
+  </property>
   <property name="statusTip">
    <string/>
   </property>
@@ -118,31 +122,37 @@
      <string>File</string>
     </property>
     <addaction name="actionOpen_dir"/>
+    <addaction name="actionSetting"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
      <string>Edit</string>
     </property>
    </widget>
-   <widget class="QMenu" name="menuSetting">
-    <property name="title">
-     <string>Setting</string>
-    </property>
-   </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="actionAbouy"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
-   <addaction name="menuSetting"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionOpen_dir">
    <property name="text">
     <string>Open dir</string>
+   </property>
+  </action>
+  <action name="actionAbouy">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="actionSetting">
+   <property name="text">
+    <string>Setting</string>
    </property>
   </action>
  </widget>

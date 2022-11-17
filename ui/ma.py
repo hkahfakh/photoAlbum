@@ -12,6 +12,9 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(566, 395)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/pics/album_image_landscape_photo_photos_icon.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        MainWindow.setWindowIcon(icon)
         MainWindow.setStatusTip("")
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -75,8 +78,6 @@ class Ui_MainWindow(object):
         self.menuFile.setObjectName("menuFile")
         self.menuEdit = QtWidgets.QMenu(self.menubar)
         self.menuEdit.setObjectName("menuEdit")
-        self.menuSetting = QtWidgets.QMenu(self.menubar)
-        self.menuSetting.setObjectName("menuSetting")
         self.menuHelp = QtWidgets.QMenu(self.menubar)
         self.menuHelp.setObjectName("menuHelp")
         MainWindow.setMenuBar(self.menubar)
@@ -85,10 +86,15 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
         self.actionOpen_dir = QtWidgets.QAction(MainWindow)
         self.actionOpen_dir.setObjectName("actionOpen_dir")
+        self.actionAbouy = QtWidgets.QAction(MainWindow)
+        self.actionAbouy.setObjectName("actionAbouy")
+        self.actionSetting = QtWidgets.QAction(MainWindow)
+        self.actionSetting.setObjectName("actionSetting")
         self.menuFile.addAction(self.actionOpen_dir)
+        self.menuFile.addAction(self.actionSetting)
+        self.menuHelp.addAction(self.actionAbouy)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuEdit.menuAction())
-        self.menubar.addAction(self.menuSetting.menuAction())
         self.menubar.addAction(self.menuHelp.menuAction())
 
         self.retranslateUi(MainWindow)
@@ -105,8 +111,9 @@ class Ui_MainWindow(object):
         self.btn_confirm.setText(_translate("MainWindow", "确认"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.menuEdit.setTitle(_translate("MainWindow", "Edit"))
-        self.menuSetting.setTitle(_translate("MainWindow", "Setting"))
         self.menuHelp.setTitle(_translate("MainWindow", "Help"))
         self.actionOpen_dir.setText(_translate("MainWindow", "Open dir"))
+        self.actionAbouy.setText(_translate("MainWindow", "About"))
+        self.actionSetting.setText(_translate("MainWindow", "Setting"))
 
-# import pics_ui_rc
+import qrc.pics_ui_rc
