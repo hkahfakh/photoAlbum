@@ -38,7 +38,14 @@ def parse_xml_object(xml_path):
     """
     with open(xml_path, 'rb') as f:
         xml_dict = xmltodict.parse(f)
+
+        if 'object' not in xml_dict['annotation']:
+            return ['Other']
         objects = xml_dict['annotation']['object']
-        names = list(ob['name'] for ob in objects)
+        names = []
+        if isinstance(objects, list):
+            names = list(ob['name'] for ob in objects)
+        else:
+            names.append(objects['name'])
 
         return list(set(names))

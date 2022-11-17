@@ -7,6 +7,7 @@ from PyQt5.QtCore import pyqtSignal, QStringListModel, Qt
 
 from ui.ma import Ui_MainWindow
 from cs_widgets.qci import QClickableImage
+from utils.toyolo import get_xml
 
 
 class MyMainWindow(QMainWindow, Ui_MainWindow):
@@ -37,12 +38,23 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.label_qci = defaultdict(list)  # key 标签 value qci
         self.all_qci = defaultdict(list)  # key qci value 标签列表
 
+        self.all_xml = set(os.listdir('./res/Annotations'))
+        self.all_img = os.listdir('./res/JPEGImages')
+        self.img_no_xml = [img for img in self.all_img if img.split('.')[0]+'.xml' not in self.all_xml]
+        pass
+
     def init_slot(self):
         self.helpSignal.connect(self.showHelpMessage)
         self.btn_choose.clicked.connect(self.slot_btn_chooseDir)
         self.btn_confirm.clicked.connect(self.item_show)
+        self.btn_start.clicked.connect(self.get_img_xml)
 
     # Slot Func
+    def get_img_xml(self):
+        while self.img_no_xml:
+            name = self.img_no_xml.pop()
+            print(get_xml("./res/JPEGImages/" + name))
+
     def item_show(self):
         for qci in self.all_qci.keys():
             qci.show()
@@ -138,7 +150,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
         img_list = list(i for i in os.listdir(img_dir_path) if i.split(".")[1] in img_type)
         annotation_list = set(list(i.split(".")[0] for i in os.listdir(annotation_path)))
-        num = len(annotation_list)
+        num = len(img_list)
         if num == 0:
             QMessageBox.warning(self, '错误', '图片为空')
 
